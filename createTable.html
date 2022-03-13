@@ -1,0 +1,128 @@
+
+    <div id="main">
+      <script src="mainscript.js"></script>
+     <form id="TableCreate"  method="post">
+        <h2>Create a table by on click</h2>
+        <input type="submit" id="createTable" value="Create table">
+      </form>
+
+      <form id="TableDelete" method="post">
+        <input type="submit" id="deleteTable" value="Delete table" style="margin: right 20px;background-color: darkred;"/>
+  
+    </form>
+
+    </div>
+   
+    <div class="result">
+        <h3>Execution time of the query is: <span id="execTime"></span></h3>
+     
+    </div>
+    <script>
+      $(document).ready(function(){
+        // let currentURL = window.location.href;
+       
+        // let start=currentURL.indexOf("=")
+        // let end= currentURL.lastIndexOf("}");
+      
+        // let jstring=currentURL.substring(++start,++end)
+        // //decodeURI(encoded)
+        // jstring=decodeURI(jstring);
+        // if (jstring=="undefined" || jstring=="") {
+        //   return true
+        // }else{
+        //   let jOb=JSON.parse(jstring)
+        //   time =jOb.time
+        //   localStorage.setItem("time",time)//localStorage.getItem("time")
+          
+      
+        //   $("#execTime").css({"color":"red","fontWeight":"bold"})
+        //   .text(localStorage.getItem("time"))
+            
+        // }
+        
+        createTable()
+        deleteTable()
+
+        function createTable(){
+         
+      
+          $("#TableCreate").on("submit",function(event){
+           event.preventDefault();
+          
+              $.post("APICreateTable.php",{
+                  "create":true
+              },function(data, status){
+                  if (status == "success") {
+                      var response =JSON.parse(data)
+                      if (response['error'] == false) { 
+                        localStorage.setItem("time",response['time'])
+                        //$("#content").load(`./${response['page']}.html`);
+                        $("#execTime").css({"color":"red","fontWeight":"bold"})
+                              .text(localStorage.getItem("time"))
+                        
+                        $("a").removeAttr("class")
+                      
+                        $(`a[href="#${response['page']}"]`).each(function() {
+                          $(this).attr("class","active");   
+                        });	
+          
+                      }else{
+                          alert(response['message'])
+          
+                      }
+          
+                  }else{
+                      alert("Please retry an error has occured!")
+                  }
+          
+              })
+                
+          })
+        }
+
+        function deleteTable(){
+
+
+
+          $("#TableDelete").on("submit",function(event){
+          event.preventDefault();
+          
+          $.post("APIDeleteTable.php",{
+          "delete":true
+          },function(data, status){
+              if (status == "success") {
+                  var response =JSON.parse(data)
+                  if (response['error'] == false) {
+                   
+                     localStorage.setItem("time", response['time'])
+                    //$("#content").load(`./${response['page']}.html`);
+                      $("#execTime").css({ "color": "red", "fontWeight": "bold" })
+                        .text(localStorage.getItem("time"))
+
+                      $("a").removeAttr("class")
+
+                      $(`a[href="#${response['page']}"]`).each(function () {
+                        $(this).attr("class", "active");
+                      });	
+                    
+      
+                  }else{
+                      alert(response['message'])
+      
+                  }
+      
+               }else{
+                    alert("Please retry an error has occured!")
+                }
+        
+            })
+            event.preventDefault()  
+          })
+      
+        }
+
+   
+      })
+ 
+        
+    </script>

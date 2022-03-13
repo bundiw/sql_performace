@@ -1,0 +1,125 @@
+
+    <h1>All Earthquakes </h1>
+    <!-- Load icon library -->
+  
+
+    <!-- The form -->
+    <form id="filterData">
+
+      <div class="input-group">
+        <select class="form-select"  name="search" required>
+          <option value="undefined" selected>Select Option</option>
+          <option value="">All places</option>
+          <option value="ak">Chickaloon, Alaska</option>
+          <option value="hv">Hawaii</option>
+          <option value="nc">The Geysers, CA</option>
+          <option value="us">Indonesia</option>
+          <option value="pr">Puerto Rico</option>
+          <option value="ci">Lytle Creek, CA</option>
+          <option value="nn">Mina, Nevada</option>
+          <option value="tx">Whites City, New Mexico</option>
+          <option value="uw">Hoodsport, Washington</option>
+          <option value="mb">Stanley, Idaho</option>
+          <option value="av">Adak, Alaska</option>
+          <option value="ok">Bradley, Oklahoma </option>
+          <option value="uu">Sunnyside, Utah</option>
+          <option value="se">Elgin, South Carolina</option>
+          <option value="nm">Tiptonville, Tennessee</option>
+        </select>
+
+
+
+        <input class="btn bg-primary text-light btn-outline-dark" name="searchBtn" value="search" type="submit" />
+      </div>
+
+    
+    </form>
+   
+
+    <div class="result">
+		<h3>Execution time of the query is: <span id="execTime"></span></h3>
+		
+	</div>
+    <h2>Earthquakes Data.</h2>
+    <div class="earthquakeData">
+
+    </div>
+    <script>
+      $(document).ready(function(){
+        
+         
+          $("#filterData").on("submit",function(event){ 
+              event.preventDefault()  
+              
+              $.post("APIFilterData.php",
+                $(this).serialize()
+              ,function(data, status){
+                  if (status == "success") {
+                      var response =JSON.parse(data)
+                      if (response['error'] == false) {
+                        localStorage.setItem("time",response['time'])
+                       // $("#content").load(`./${response['page']}.html`);
+                        $("#execTime").css({"color":"red","fontWeight":"bold"})
+                            .text(localStorage.getItem("time"))
+                        $("a").removeAttr("class")
+
+                        $(`a[href="#${response['page']}"]`).each(function() {
+                          $(this).attr("class","active");   
+                        });	
+                       
+                        populateInc(response.data)
+          
+                      }else{
+                          alert(response['message'])
+          
+                      }
+          
+                  }else{
+                      alert("Please retry an error has occured!")
+                  }
+          
+              })
+
+              
+          })
+
+           function populateInc(jOb) {
+
+
+            
+            let htmlData = "<table>"
+            let count = 1
+            htmlData += `<tr>
+                            <th>No.</th>
+                            <th>time</th>
+                            <th>latitude</th>
+                            <th>longitude</th>
+                            <th>type</th>
+                            <th>place</th>
+                          </tr>`
+            jOb.forEach(element => {
+
+              htmlData += `<tr>
+                        <td>${count}</td>
+                        <td>${element.time}</td>
+                        <td>${element.latitude}</td>
+                        <td>${element.longitude}</td>
+                        <td>${element.type}</td>
+                        <td>${element.place}</td>
+                      </tr>`
+              count++
+
+            });
+            htmlData += "<table>"
+            $(".earthquakeData").html(htmlData)
+
+        }
+
+      })
+    
+        
+        
+    </script>
+    
+
+    
